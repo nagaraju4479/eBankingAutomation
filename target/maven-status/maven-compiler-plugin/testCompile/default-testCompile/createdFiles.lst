@@ -1,0 +1,10 @@
+com\eBanking\runners\TestRunner.class
+com\eBanking\stepDefinitions\AccountDetailsPageSteps.class
+com\eBanking\stepDefinitions\AdminDashboardPageSteps.class
+com\eBanking\stepDefinitions\AddPayeePageSteps.class
+com\eBanking\stepDefinitions\UserDashboardPageSteps.class
+com\eBanking\stepDefinitions\AccountHolderDetailsPageSteps.class
+com\eBanking\stepDefinitions\UserAccountDetailsSteps.class
+com\eBanking\stepDefinitions\NewAccountOpeningRequestPageSteps.class
+com\eBanking\stepDefinitions\UserLoginSteps.class
+com\eBanking\stepDefinitions\Hooks.class

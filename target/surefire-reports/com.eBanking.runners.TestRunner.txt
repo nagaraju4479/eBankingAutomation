@@ -1,0 +1,9 @@
+-------------------------------------------------------------------------------
+Test set: com.eBanking.runners.TestRunner
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 21.83 s <<< FAILURE! -- in com.eBanking.runners.TestRunner
+User Account.Send New account opening request to Admin -- Time elapsed: 20.42 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <e-Banking | User Dashboard> but was: <e-Banking | User Login>
+	at com.eBanking.stepDefinitions.UserLoginSteps.iShouldSuccessfullyLoggedInToTheApplication(UserLoginSteps.java:80)
+	at ✽.I should successfully logged in to the application(classpath:features/UserAccount.feature:20)
+

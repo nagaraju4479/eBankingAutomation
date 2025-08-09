@@ -1,0 +1,7 @@
+<configuration>
+  <theme>standard</theme>
+  <encoding>utf-8</encoding>
+  <documentTitle>eBanking Automation Report</documentTitle>
+  <reportName>Extent Report</reportName>
+  <timelineEnabled>true</timelineEnabled>
+</configuration>
