@@ -11,12 +11,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    # Provide an AspectJ javaagent path via environment variable.  This avoids
-    # hard‑coded Windows paths in the POM and works on Linux runners.  The path
-    # resolves to the Maven local repository ($HOME/.m2/repository).
-    env:
-      JAVA_TOOL_OPTIONS: -javaagent:$HOME/.m2/repository/org/aspectj/aspectjweaver/1.9.22/aspectjweaver-1.9.22.jar
-
     steps:
       # Check out the repository so that the workflow has access to the code.
       - uses: actions/checkout@v4
@@ -29,6 +23,19 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+
+      # Pre-download the AspectJ weaver used as a javaagent.  Without this
+      # dependency present, setting the agent will cause the JVM to abort.  This
+      # resolves the JAR into the local Maven repository before running tests.
+      - name: Resolve AspectJ dependency
+        run: mvn -B -q dependency:get -Dartifact=org.aspectj:aspectjweaver:1.9.22
+
+      # After resolving dependencies, set the JAVA_TOOL_OPTIONS environment
+      # variable so that the Maven Surefire plugin can locate the AspectJ
+      # javaagent.  This command appends to $GITHUB_ENV, making the variable
+      # available to subsequent steps.
+      - name: Configure AspectJ agent
+        run: echo "JAVA_TOOL_OPTIONS=-javaagent:$HOME/.m2/repository/org/aspectj/aspectjweaver/1.9.22/aspectjweaver-1.9.22.jar" >> $GITHUB_ENV
 
       # Install Google Chrome and Xvfb.  Selenium tests require a real
       # browser.  Xvfb provides a virtual display so that Chrome can run in
