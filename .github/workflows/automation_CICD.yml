@@ -1,6 +1,6 @@
+name: E-Banking CI
 
-name: Java CI with Maven
-
+# Run the CI pipeline on pushes and pull requests to the main branch.
 on:
   push:
     branches: [ "main" ]
@@ -8,25 +8,41 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
+    # Provide an AspectJ javaagent path via environment variable.  This avoids
+    # hard‑coded Windows paths in the POM and works on Linux runners.  The path
+    # resolves to the Maven local repository ($HOME/.m2/repository).
+    env:
+      JAVA_TOOL_OPTIONS: -javaagent:$HOME/.m2/repository/org/aspectj/aspectjweaver/1.9.22/aspectjweaver-1.9.22.jar
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+      # Check out the repository so that the workflow has access to the code.
+      - uses: actions/checkout@v4
 
-        # Install Google Chrome; WebDriverManager downloads the driver itself
-    - name: Install Chrome
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
+      # Set up Temurin JDK 21 and enable Maven caching.  This speeds up
+      # subsequent builds by reusing dependencies from the GitHub Actions cache.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      # Install Google Chrome and Xvfb.  Selenium tests require a real
+      # browser.  Xvfb provides a virtual display so that Chrome can run in
+      # environments without a GUI.  The DISPLAY environment variable is
+      # exported for subsequent steps.
+      - name: Install Chrome and Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable xvfb
+          # Start a virtual display in the background
+          Xvfb :99 -screen 0 1920x1080x24 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
+      # Build the project and run the unit/integration tests.  The '-B'
+      # (batch mode) flag suppresses Maven's interactive progress output.
+      - name: Build and test with Maven
+        run: mvn -B clean test
